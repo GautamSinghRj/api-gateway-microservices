@@ -1,0 +1,11 @@
+{
+  "extends": "../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "out-tsc/@api-gateway-microservices/auth-service-e2e",
+    "esModuleInterop": true,
+    "noUnusedLocals": false,
+    "noImplicitAny": false
+  },
+  "include": ["jest.config.ts", "src/**/*.js"],
+  "references": []
+}
