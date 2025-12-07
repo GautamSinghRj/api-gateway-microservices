@@ -39,7 +39,9 @@
     "auth-service-e2e"
   ],
   "dependencies": {
+    "@prisma/adapter-pg": "^7.1.0",
     "axios": "^1.6.0",
-    "express": "^4.21.2"
+    "express": "^4.21.2",
+    "pg": "^8.16.3"
   }
 }

@@ -103,6 +103,16 @@
     }
   },
   "dependencies": {
-    "express": "^4.21.2"
+    "@prisma/adapter-pg": "^7.1.0",
+    "@prisma/client": "^7.1.0",
+    "bcrypt": "^6.0.0",
+    "cors": "^2.8.5",
+    "express": "^4.21.2",
+    "jsonwebtoken": "^9.0.3",
+    "pg": "^8.16.3"
+  },
+  "devDependencies": {
+    "dotenv": "^16.4.7",
+    "prisma": "^7.1.0"
   }
 }
