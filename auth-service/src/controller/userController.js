@@ -13,7 +13,7 @@ export const registerUser = async (req, res) => {
     if (!email || !password)
       return res
         .status(400)
-        .json({ message: 'Email and password are required for registration' });
+        .json({ message: 'Invalid Credentials' });
     const hashedPassword = await bcrypt.hash(password, 10);
     const foundUser = await prisma.user.findUnique({
       where: {
@@ -23,7 +23,7 @@ export const registerUser = async (req, res) => {
     if (foundUser)
       return res
         .status(409)
-        .json({ message: 'User already exists in the database' });
+        .json({ message: 'Invalid User' });
     const user = await prisma.user.create({
       data: {
         email,
@@ -47,14 +47,14 @@ export const loginUser = async (req, res) => {
     if (!email || !password)
       return res
         .status(400)
-        .json({ message: 'Email and password are required for login' });
+        .json({ message: 'Invalid Credentials' });
     const user = await prisma.user.findUnique({
       where: {
         email: email,
       },
     });
     if (!user)
-      return res.status(404).json({ message: 'User not found in database' });
+      return res.status(404).json({ message: 'Invalid User' });
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return res.status(401).json({ message: 'Invalid Password' });
     const token = generateToken(user);
@@ -65,4 +65,10 @@ export const loginUser = async (req, res) => {
     console.log(err);
     return res.status(500).json({ message: 'Server error', error: err });
   }
+};
+
+export const healthCheck = (req, res) => {
+  console.log("HEALTH CHECK CALLED");
+  return res.sendStatus(200);
+  console.log("Health Check response sent")
 };
