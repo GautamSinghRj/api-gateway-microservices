@@ -41,7 +41,12 @@
       "options": {
         "targetName": "test"
       },
-      "exclude": ["gateway-e2e/**/*", "auth-service-e2e/**/*"]
+      "exclude": [
+        "gateway-e2e/**/*",
+        "auth-service-e2e/**/*",
+        "task-service-e2e/**/*",
+        "task-worker-e2e/**/*"
+      ]
     }
   ],
   "targetDefaults": {

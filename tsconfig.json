@@ -14,6 +14,18 @@
     },
     {
       "path": "./auth-service"
+    },
+    {
+      "path": "./task-service-e2e"
+    },
+    {
+      "path": "./task-service"
+    },
+    {
+      "path": "./task-worker-e2e"
+    },
+    {
+      "path": "./task-worker"
     }
   ]
 }

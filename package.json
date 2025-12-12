@@ -36,7 +36,11 @@
     "gateway",
     "gateway-e2e",
     "auth-service",
-    "auth-service-e2e"
+    "auth-service-e2e",
+    "task-service",
+    "task-service-e2e",
+    "task-worker",
+    "task-worker-e2e"
   ],
   "dependencies": {
     "@prisma/adapter-pg": "^7.1.0",
