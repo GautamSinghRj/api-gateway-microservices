@@ -2,7 +2,8 @@ import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
-import { createProxyMiddleware} from 'http-proxy-middleware';
+import jwt from "jsonwebtoken"
+import { createProxyMiddleware } from 'http-proxy-middleware';
 
 const host = process.env.HOST ?? '0.0.0.0';
 const port = process.env.PORT ? Number(process.env.PORT) : 3000;
@@ -28,7 +29,6 @@ setInterval(() => {
   Object.keys(reqCount).forEach((ipAddress) => (reqCount[ipAddress] = 0));
 }, interval);
 
-
 //this is middleware function it takes req, res and next(here the next() helps us to go to next middleware like app.get())
 function rateLimitTimeout(req, res, next) {
   const ipAddress = req.ip;
@@ -47,16 +47,34 @@ function rateLimitTimeout(req, res, next) {
   next();
 }
 
+function authMiddleware(req, res, next) {
+  const authHeader = req.headers.authorization;
+  if (!authHeader || !authHeader.startsWith('Bearer '))
+    return res.status(401).json({ message: 'Unauthorized' });
+  const token = authHeader.split(' ')[1];
+  try {
+    jwt.verify(token, process.env.JWT_SECRET);
+    next();
+  } catch (error) {
+    return res.status(401).json({ message: error });
+  }
+}
+
 services.forEach(({ route, target }) => {
   console.log(route);
   const proxyOptions = {
     target,
     changeOrigin: true,
-    pathRewrite: { [`^${route}`]: '/api/v1/health' }
+    pathRewrite: { [`^${route}`]: '/api/v1/health' },
   };
-  app.use(route, rateLimitTimeout, createProxyMiddleware(proxyOptions));
+  app.use(
+    route,
+    authMiddleware,
+    rateLimitTimeout,
+    createProxyMiddleware(proxyOptions)
+  );
 });
-  
+
 /*try {
   return 
 } catch (err) {

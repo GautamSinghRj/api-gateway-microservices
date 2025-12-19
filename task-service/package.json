@@ -103,6 +103,8 @@
     }
   },
   "dependencies": {
-    "express": "^4.21.2"
+    "axios": "^1.13.2",
+    "express": "^4.21.2",
+    "jsonwebtoken": "^9.0.3"
   }
 }
