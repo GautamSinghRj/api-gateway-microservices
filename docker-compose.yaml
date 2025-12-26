@@ -20,4 +20,21 @@ services:
       retries: 3
     env_file:
       - "./auth-service/.env"
-    
+  task-service:
+    build:
+      context: ./task-service
+      dockerfile: Dockerfile
+    image: task-service
+    ports:
+      - "8002:8002"
+    env_file:
+      - "./task-service/.env"
+  task-worker:
+    build:
+      context: ./task-worker
+      dockerfile: Dockerfile
+    image: task-worker
+    env_file:
+      - "./task-worker/.env"
+    expose:
+      - "8003"

@@ -14,7 +14,7 @@ export const taskfiltering = async (req, res) => {
   const { type, payload, schedule } = req.body;
   const routes = {
     http_request: '/http',
-    pdf_summarizer: '/pdf',
+    email_sender: '/email',
     text_summarizer: '/text',
   };
   if (!type || !payload)
@@ -32,7 +32,7 @@ export const taskfiltering = async (req, res) => {
   try {
     const response = await axios.post(`http://task-worker:8003${route}`, body, {
       headers: { Authorization: req.headers.authorization },
-      timeout: 5000,
+      timeout: 1000,
     });
     return res.status(200).json(response.data);
   } catch (err) {

@@ -1,8 +1,10 @@
 import { Router } from 'express';
-import { httpWorker, pdfWorker, textWorker } from '../controller/workerController';
+import { httpWorker } from '../controller/httpWorkerController';
+import { textWorker } from '../controller/textWorkerController';
+import { emailWorker } from '../controller/emailWorkerController';
 
-const route=new Router();
+const route = new Router();
 
-route.post("/http",httpWorker);
-route.post("/pdf",pdfWorker);
-route.post("/text",textWorker);
+route.post('/http', httpWorker);
+route.post('/email', emailWorker);
+route.post('/text', textWorker);
