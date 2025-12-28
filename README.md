@@ -14,7 +14,7 @@ This project demonstrates **real-world backend engineering concepts** such as AP
 - ⚙️ **Background Job Processing using BullMQ**
 - 🕒 **Cron-based Task Scheduling**
 - 🔁 **Inter-service Communication**
-- 📬 **Email & Notification Support**
+- 📬 **Newsletter, HTTP methods calss & AI Text Support**
 - 📊 **Scalable and Production-Ready Design**
 
 ---
@@ -28,8 +28,8 @@ Client
 API Gateway
    |
    |── Auth Service
+   |── Gateway Service
    |── Task Service
-   |── Notification Service
    |── Worker Service (BullMQ)
    |
  Redis (Queue)
