@@ -32,7 +32,7 @@ export const taskfiltering = async (req, res) => {
   try {
     const response = await axios.post(`http://task-worker:8003${route}`, body, {
       headers: { Authorization: req.headers.authorization },
-      timeout: 1000,
+      timeout: 10000,
     });
     return res.status(200).json(response.data);
   } catch (err) {
