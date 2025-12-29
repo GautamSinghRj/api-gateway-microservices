@@ -2,7 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
-import jwt from "jsonwebtoken"
+import jwt from 'jsonwebtoken';
 import { createProxyMiddleware } from 'http-proxy-middleware';
 
 const host = process.env.HOST ?? '0.0.0.0';
@@ -16,8 +16,20 @@ app.disable('x-powered-by');
 
 const services = [
   {
+    route: '/register',
+    target: 'http://auth-service:8001',
+  },
+  {
     route: '/health',
     target: 'http://auth-service:8001',
+  },
+  {
+    route: '/login',
+    target: 'http://auth-service:8001',
+  },
+  {
+    route: '/task',
+    target: 'http://task-service:8002',
   },
 ];
 
@@ -42,7 +54,7 @@ function rateLimitTimeout(req, res, next) {
   }
   req.setTimeout(15000, () => {
     res.status(504).json({ status: 'Error', message: 'Gateway Timeout' });
-    req.abort();
+    req.destroy();
   });
   next();
 }
@@ -56,7 +68,8 @@ function authMiddleware(req, res, next) {
     jwt.verify(token, process.env.JWT_SECRET);
     next();
   } catch (error) {
-    return res.status(401).json({ message: error });
+    console.log(error);
+    return res.status(401).json({ message: 'Expired or Invalid Token' });
   }
 }
 
@@ -65,20 +78,16 @@ services.forEach(({ route, target }) => {
   const proxyOptions = {
     target,
     changeOrigin: true,
-    pathRewrite: { [`^${route}`]: '/api/v1/health' },
   };
-  app.use(
-    route,
-    authMiddleware,
-    rateLimitTimeout,
-    createProxyMiddleware(proxyOptions)
-  );
+  const middlewares = [rateLimitTimeout];
+  if (route === '/task') middlewares.unshift(authMiddleware);
+  app.use(route, ...middlewares, createProxyMiddleware(proxyOptions));
 });
 
 /*try {
   return 
 } catch (err) {
-  console.warn("Switching to different copy");
+  console.warn("Switching to different copy");  
   return
 }*/
 app.listen(port, host, () => {

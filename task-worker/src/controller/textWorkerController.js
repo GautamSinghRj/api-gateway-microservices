@@ -1,4 +1,4 @@
-import { queue } from '../queue';
+import { queue } from '../queue/queue';
 import cron from 'node-cron';
 import crypto from 'crypto';
 

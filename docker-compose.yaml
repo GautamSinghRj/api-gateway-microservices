@@ -15,7 +15,7 @@ services:
       - "8001:8001"
     healthcheck:
       test: [ "CMD", "wget", "-qO-", "http://127.0.0.1:8001/api/v1/health" ]
-      interval: 5s
+      interval: 15s
       timeout: 3s
       retries: 3
     env_file:

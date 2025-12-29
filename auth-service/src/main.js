@@ -8,7 +8,7 @@ app.use((req, res, next) => {
   console.log("REQ RECEIVED:", req.method, req.url);
   next();
 });
-app.use('/api/v1',userRouter);
+app.use('/',userRouter);
 app.listen(port, host, () => {
   console.log(`[ ready ] http://${host}:${port}`);
 });

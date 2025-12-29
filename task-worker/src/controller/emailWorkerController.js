@@ -1,3 +1,7 @@
+import { queue } from '../queue/queue';
+import cron from 'node-cron';
+import crypto from 'crypto';
+
 export const emailWorker = async (req, res) => {
   const { payload, schedule } = req.body;
   if (!payload || !schedule) {

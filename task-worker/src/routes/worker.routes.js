@@ -3,8 +3,10 @@ import { httpWorker } from '../controller/httpWorkerController';
 import { textWorker } from '../controller/textWorkerController';
 import { emailWorker } from '../controller/emailWorkerController';
 
-const route = new Router();
+const router = new Router();
 
-route.post('/http', httpWorker);
-route.post('/email', emailWorker);
-route.post('/text', textWorker);
+router.post('/http', httpWorker);
+router.post('/email', emailWorker);
+router.post('/text', textWorker);
+ 
+export default router;
