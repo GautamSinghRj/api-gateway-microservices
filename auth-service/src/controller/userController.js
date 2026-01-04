@@ -70,5 +70,4 @@ export const loginUser = async (req, res) => {
 export const healthCheck = (req, res) => {
   console.log("HEALTH CHECK CALLED");
   return res.sendStatus(200);
-  console.log("Health Check response sent")
 };

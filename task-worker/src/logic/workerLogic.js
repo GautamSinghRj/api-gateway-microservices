@@ -1,9 +1,18 @@
 import { Worker } from 'bullmq';
 import axios from 'axios';
 import { GoogleGenAI } from '@google/genai';
-import { Resend } from 'resend';
+import nodemailer from 'nodemailer';
 const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-const resend = new Resend(process.env.RESEND_API_KEY);
+const transporter = nodemailer.createTransport({
+  host: 'smtp-relay.brevo.com',
+  port: 587,
+  secure: false,
+  auth: {
+    user: process.env.BREVO_SMTP_USER,
+    pass: process.env.BREVO_SMTP_KEY,
+  },
+});
+transporter.verify();
 const worker = new Worker(
   'jobScheduler',
   async (job) => {
@@ -17,20 +26,21 @@ const worker = new Worker(
             data: body,
             timeout: 10000,
           });
+          await job.log(`HTTP ${response.status} Success`);
+          await job.log(
+            `Response:${JSON.stringify(response.data).slice(0, 500)}`
+          );
           return response.data;
         } catch (error) {
-          if (error.response) {
-            throw new Error(
-              `HTTP ${error.response.status}:${JSON.stringify(
-                error.response.data
-              )}`
-            );
-          }
-          throw error instanceof Error ? error : new Error(String(error));
+          await job.log(`HTTP error:${error.message}`);
+          throw error;
         }
       }
       case 'emailSender': {
         const { recipent } = job.data;
+        if (!recipent) {
+          throw new Error('Recipient email missing');
+        }
         const prompt = `You are a professional newsletter copywriter.
         Generate a short, engaging welcome newsletter email in clean HTML.
 
@@ -73,22 +83,20 @@ const worker = new Worker(
             signal: controller.signal,
           });
           const htmlText = response?.candidates?.[0]?.content?.parts?.[0]?.text;
-          await resend.emails.send({
-            from: 'freegamingworld413@gmail.com',
+          if (!htmlText || !htmlText.trim()) {
+            throw new Error('AI returned empty HTML');
+          }
+          await transporter.sendMail({
+            from: `"ApiGateway" <${process.env.BREVO_SMTP_USER}>`,
             to: recipent,
             subject: 'Welcome to the newsletter',
             html: htmlText,
           });
-          return;
+          await job.log(`Email sent to ${recipent}`);
+          return { status: `sent`, recipent };
         } catch (error) {
-          if (error.response) {
-            throw new Error(
-              `HTTP ${error.response.status}:${JSON.stringify(
-                error.response.data
-              )}`
-            );
-          }
-          throw error instanceof Error ? error : new Error(String(error));
+          await job.log(`EMAIL ERROR: ${error.message}`);
+          throw error;
         } finally {
           clearTimeout(timeoutObj);
         }
@@ -118,12 +126,12 @@ const worker = new Worker(
           if (!text) {
             throw new Error('Empty ai response');
           }
+          await job.log(`Summary generated (${text.split(' ').length} words)`);
+          await job.log(`SUMMARY:\n${text}`);
           return text;
         } catch (error) {
-          if (error.name === 'AbortError') {
-            throw new Error('AI Timeout');
-          }
-          throw error instanceof Error ? error : new Error(String(error));
+          await job.log(`SUMMARY ERROR: ${error.message}`);
+          throw error;
         } finally {
           clearTimeout(timeoutObj);
         }
@@ -140,10 +148,3 @@ const worker = new Worker(
     },
   }
 );
-
-worker.on('completed', (job) => {
-  console.log(`Job ${job.id} completed`);
-});
-worker.on('failed', (job, err) => {
-  console.log(`Job ${job.id} failed`, err.message);
-});

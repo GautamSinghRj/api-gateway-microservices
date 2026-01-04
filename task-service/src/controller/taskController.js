@@ -39,6 +39,6 @@ export const taskfiltering = async (req, res) => {
     if (err.response) {
       return res.status(err.response.status).json(err.response.data);
     }
-    return res.status(503).json({ message: 'Task service unavailable' });
+    return res.status(503).json({ message: 'Task service unavailable', err });
   }
 };

@@ -4,6 +4,7 @@ import crypto from 'crypto';
 
 export const emailWorker = async (req, res) => {
   const { payload, schedule } = req.body;
+  const { recipent } = payload;
   if (!payload || !schedule) {
     return res
       .status(400)
@@ -15,7 +16,6 @@ export const emailWorker = async (req, res) => {
   if (!cron.validate(schedule)) {
     return res.status(400).json({ message: 'Invalid cron expression' });
   }
-  const { recipent } = payload;
   const hash = crypto
     .createHash('sha256')
     .update(recipent)
@@ -33,7 +33,9 @@ export const emailWorker = async (req, res) => {
         backoff: { type: 'exponential', delay: 5000 },
       }
     );
-    return;
+    return res
+      .status(201)
+      .json({ message: 'Job scheduled successfully', jobId });
   } catch (err) {
     return res.status(500).json({ message: 'Queue Error', err });
   }

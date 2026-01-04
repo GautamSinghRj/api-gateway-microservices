@@ -6,6 +6,8 @@ services:
     image: gateway
     ports:
       - "3000:3000"
+    env_file:
+      - "./gateway/.env"
   auth-service:
     build:
       context: ./auth-service
@@ -14,7 +16,7 @@ services:
     ports:
       - "8001:8001"
     healthcheck:
-      test: [ "CMD", "wget", "-qO-", "http://127.0.0.1:8001/api/v1/health" ]
+      test: [ "CMD", "wget", "-qO-", "http://127.0.0.1:8001/health" ]
       interval: 15s
       timeout: 3s
       retries: 3

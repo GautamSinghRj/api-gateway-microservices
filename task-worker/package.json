@@ -103,6 +103,8 @@
     }
   },
   "dependencies": {
+    "@bull-board/api": "^6.16.2",
+    "@bull-board/express": "^6.16.2",
     "@google/genai": "^1.34.0",
     "axios": "^1.13.2",
     "bullmq": "^5.66.0",
