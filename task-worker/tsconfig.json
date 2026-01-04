@@ -1,7 +1,9 @@
 {
   "extends": "../tsconfig.base.json",
   "files": [],
-  "include": ["src/**/*.js"],
+  "include": [
+    "src/**/*.js"
+  ],
   "references": [
     {
       "path": "./tsconfig.app.json"
@@ -11,6 +13,6 @@
     }
   ],
   "compilerOptions": {
-    "allowJs": true
+    "allowJs": true,
   }
 }
