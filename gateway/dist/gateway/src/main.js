@@ -30,7 +30,6 @@ var import_http_proxy_middleware = require("http-proxy-middleware");
 const host = process.env.HOST ?? "0.0.0.0";
 const port = process.env.PORT ? Number(process.env.PORT) : 3e3;
 const app = (0, import_express.default)();
-app.set("trust proxy", 1);
 app.use((0, import_cors.default)());
 app.use((0, import_helmet.default)());
 app.use((0, import_morgan.default)("combined"));
