@@ -29,7 +29,7 @@ export const taskfiltering = async (req, res) => {
     return res.status(400).json({ message: 'Wrong type of task entered' });
   }
   try {
-    const response = await axios.post(`http://task-worker:8003${route}`, body, {
+    const response = await axios.post(`https://task-worker-7m56.onrender.com${route}`, body, {
       headers: { Authorization: req.headers.authorization },
       timeout: 10000,
     });
