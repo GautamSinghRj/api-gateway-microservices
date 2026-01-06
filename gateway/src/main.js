@@ -8,6 +8,7 @@ import { createProxyMiddleware } from 'http-proxy-middleware';
 const host = process.env.HOST ?? '0.0.0.0';
 const port = process.env.PORT ? Number(process.env.PORT) : 3000;
 const app = express();
+app.set('trust proxy', 1);
 app.use(cors());
 app.use(helmet());
 app.use(morgan('combined'));
@@ -16,24 +17,25 @@ app.disable('x-powered-by');
 const services = [
   {
     route: '/register',
-    target: 'process.env.AUTH_SERVICE_URL',
+    target: process.env.AUTH_SERVICE_URL,
   },
   {
     route: '/health',
-    target: 'process.env.AUTH_SERVICE_URL',
+    target: process.env.AUTH_SERVICE_URL,
+    rateLimit: false,
   },
   {
     route: '/login',
-    target: 'process.env.AUTH_SERVICE_URL',
+    target: process.env.AUTH_SERVICE_URL,
   },
   {
     route: '/job',
-    target: 'process.env.TASK_WORKER_URL',
+    target: process.env.TASK_WORKER_URL,
     auth: true,
   },
   {
     route: '/task',
-    target: 'process.env.TASK_SERVICE_URL',
+    target: process.env.TASK_SERVICE_URL,
     auth: true,
   },
 ];
@@ -166,9 +168,6 @@ and traffic control across services.
 <div class="route">
   <h2>GET /health</h2>
   <p>Checks authentication service health</p>
-
-  <p class="auth">🔒 Requires Authorization Header</p>
-  <code>Authorization: Bearer &lt;JWT_TOKEN&gt;</code>
 </div>
 
 <div class="route">
@@ -206,9 +205,10 @@ and traffic control across services.
   `);
 });
 
-services.forEach(({ route, target, auth }) => {
-  const middlewares = [rateLimit];
-  if (auth) middlewares.unshift(authMiddleware);
+services.forEach(({ route, target, auth, rateLimit: rl = true }) => {
+  const middlewares = [];
+  if (auth) middlewares.push(authMiddleware);
+  if (rl) middlewares.push(rateLimit);
   app.use(
     ...middlewares,
     createProxyMiddleware({
