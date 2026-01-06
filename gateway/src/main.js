@@ -27,7 +27,7 @@ const services = [
     target: 'http://auth-service:8001',
   },
   {
-    route: '/admin/queues',
+    route: '/job',
     target: 'http://task-worker:8003',
     auth: true,
   },

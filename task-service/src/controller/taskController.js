@@ -14,7 +14,6 @@ export const taskfiltering = async (req, res) => {
   const { type, payload, schedule } = req.body;
   const routes = {
     http_request: '/http',
-    email_sender: '/email',
     text_summarizer: '/text',
   };
   if (!type || !payload)
@@ -40,5 +39,27 @@ export const taskfiltering = async (req, res) => {
       return res.status(err.response.status).json(err.response.data);
     }
     return res.status(503).json({ message: 'Task service unavailable', err });
+  }
+};
+
+export const taskFilteringGet = async (req, res) => {
+  if (!req.headers.authorization) {
+    return res.status(401).json({ message: 'Unauthorized access' });
+  }
+  try {
+    const response = await axios.get('http://task-worker:8003/job', {
+      headers: {
+        Authorization: req.headers.authorization,
+      },
+      timeout: 10000,
+    });
+    return res.status(200).json(response.data);
+  } catch (err) {
+    if (err.response) {
+      return res.status(err.response.status).json(err.response.data);
+    }
+    return res.status(503).json({
+      message: 'Task service unavailable',
+    });
   }
 };

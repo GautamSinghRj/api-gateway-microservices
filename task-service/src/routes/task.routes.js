@@ -1,8 +1,9 @@
 import { Router } from 'express';
-import { taskfiltering } from '../controller/taskController';
+import { taskfiltering, taskFilteringGet } from '../controller/taskController';
 
 const router = new Router();
 
 router.post('/task',taskfiltering);
+router.get('/job',taskFilteringGet);
 
 export default router;

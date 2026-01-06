@@ -1,12 +1,12 @@
 import express from 'express';
 import { createConnection } from './config/redis';
 import workerRouter from './routes/worker.routes.js';
-import { setupBullboard } from './bullboard';
+import './logic/workerLogic';
+import './queue/queue';
 const host = process.env.HOST ?? '0.0.0.0';
 const port = process.env.PORT ? Number(process.env.PORT) : 8003;
 const app = express();
 app.use(express.json());
-setupBullboard(app);
 app.use('/', workerRouter);
 async function start() {
   try {
