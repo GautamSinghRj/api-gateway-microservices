@@ -219,11 +219,11 @@ services.forEach(({ route, target, auth }) => {
   if (auth)
     middlewares.unshift(authMiddleware);
   app.use(
+    route,
     ...middlewares,
     (0, import_http_proxy_middleware.createProxyMiddleware)({
       target,
-      changeOrigin: true,
-      pathFilter: route
+      changeOrigin: true
     })
   );
 });
