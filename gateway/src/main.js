@@ -8,7 +8,7 @@ import { createProxyMiddleware } from 'http-proxy-middleware';
 const host = process.env.HOST ?? '0.0.0.0';
 const port = process.env.PORT ? Number(process.env.PORT) : 3000;
 const app = express();
-app.set('trust proxy', 1);
+app.set('trust proxy',1)
 app.use(cors());
 app.use(helmet());
 app.use(morgan('combined'));
@@ -22,7 +22,6 @@ const services = [
   {
     route: '/health',
     target: process.env.AUTH_SERVICE_URL,
-    rateLimit: false,
   },
   {
     route: '/login',
@@ -40,7 +39,7 @@ const services = [
   },
 ];
 
-const rateLm = 100;
+const rateLm = 18;
 const interval = 60 * 1000;
 const reqCount = {};
 
@@ -205,10 +204,9 @@ and traffic control across services.
   `);
 });
 
-services.forEach(({ route, target, auth, rateLimit: rl = true }) => {
-  const middlewares = [];
-  if (auth) middlewares.push(authMiddleware);
-  if (rl) middlewares.push(rateLimit);
+services.forEach(({ route, target, auth }) => {
+  const middlewares = [rateLimit];
+  if (auth) middlewares.unshift(authMiddleware);
   app.use(
     ...middlewares,
     createProxyMiddleware({

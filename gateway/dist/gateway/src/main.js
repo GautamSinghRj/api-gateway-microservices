@@ -42,8 +42,7 @@ const services = [
   },
   {
     route: "/health",
-    target: process.env.AUTH_SERVICE_URL,
-    rateLimit: false
+    target: process.env.AUTH_SERVICE_URL
   },
   {
     route: "/login",
@@ -215,12 +214,10 @@ and traffic control across services.
 </html>
   `);
 });
-services.forEach(({ route, target, auth, rateLimit: rl = true }) => {
-  const middlewares = [];
+services.forEach(({ route, target, auth }) => {
+  const middlewares = [rateLimit];
   if (auth)
-    middlewares.push(authMiddleware);
-  if (rl)
-    middlewares.push(rateLimit);
+    middlewares.unshift(authMiddleware);
   app.use(
     ...middlewares,
     (0, import_http_proxy_middleware.createProxyMiddleware)({
