@@ -215,15 +215,15 @@ and traffic control across services.
   `);
 });
 services.forEach(({ route, target, auth }) => {
-  const middlewares = [rateLimit];
+  const middlewares = [];
   if (auth)
     middlewares.unshift(authMiddleware);
   app.use(
-    route,
     ...middlewares,
     (0, import_http_proxy_middleware.createProxyMiddleware)({
       target,
-      changeOrigin: true
+      changeOrigin: true,
+      pathFilter: route
     })
   );
 });
