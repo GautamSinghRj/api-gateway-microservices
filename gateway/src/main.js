@@ -8,6 +8,7 @@ import { createProxyMiddleware } from 'http-proxy-middleware';
 const host = process.env.HOST ?? '0.0.0.0';
 const port = process.env.PORT ? Number(process.env.PORT) : 3000;
 const app = express();
+app.set('trust proxy', 1);
 app.use(cors());
 app.use(helmet());
 app.use(morgan('combined'));
@@ -48,7 +49,9 @@ setInterval(() => {
 
 //this is middleware function it takes req, res and next(here the next() helps us to go to next middleware like app.get())
 function rateLimit(req, res, next) {
-  const ipAddress = req.ip;
+  const ipAddress =
+    req.headers['x-forwarded-for']?.split(',')[0] ||
+    req.socket.remoteAddress;
 
   reqCount[ipAddress] = (reqCount[ipAddress] || 0) + 1;
 
@@ -204,7 +207,7 @@ and traffic control across services.
 });
 
 services.forEach(({ route, target, auth }) => {
-  const middlewares = [];
+  const middlewares = [rateLimit];
   if (auth) middlewares.unshift(authMiddleware);
   app.use(
     ...middlewares,

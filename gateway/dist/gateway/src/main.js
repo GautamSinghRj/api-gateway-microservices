@@ -30,6 +30,7 @@ var import_http_proxy_middleware = require("http-proxy-middleware");
 const host = process.env.HOST ?? "0.0.0.0";
 const port = process.env.PORT ? Number(process.env.PORT) : 3e3;
 const app = (0, import_express.default)();
+app.set("trust proxy", 1);
 app.use((0, import_cors.default)());
 app.use((0, import_helmet.default)());
 app.use((0, import_morgan.default)("combined"));
@@ -65,7 +66,7 @@ setInterval(() => {
   Object.keys(reqCount).forEach((ipAddress) => reqCount[ipAddress] = 0);
 }, interval);
 function rateLimit(req, res, next) {
-  const ipAddress = req.ip;
+  const ipAddress = req.headers["x-forwarded-for"]?.split(",")[0] || req.socket.remoteAddress;
   reqCount[ipAddress] = (reqCount[ipAddress] || 0) + 1;
   if (reqCount[ipAddress] > rateLm) {
     return res.status(429).json({ status: "Error", message: "Rate Limit Exceeded" });
@@ -214,7 +215,7 @@ and traffic control across services.
   `);
 });
 services.forEach(({ route, target, auth }) => {
-  const middlewares = [];
+  const middlewares = [rateLimit];
   if (auth)
     middlewares.unshift(authMiddleware);
   app.use(
