@@ -40,7 +40,7 @@ const services = [
   },
 ];
 
-const rateLm = 18;
+const rateLm = 100;
 const interval = 60 * 1000;
 const reqCount = {};
 
